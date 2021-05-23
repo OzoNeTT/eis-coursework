@@ -1,6 +1,7 @@
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
 #include <SPI.h>
+
 #define INVERT_Y 1    // инвертировать по вертикали (если дождь идёт вверх)
 #define INVERT_X 0    // инвертировать по горизонтали (если текст не читается)
 #define XAXIS 0
@@ -97,43 +98,43 @@ byte func2(byte x){
     return (((x & 128) | ((x << 2) >> 1)) & (128 + 64)) >> 4;
 }
 
+byte func_produce(int a, int i, int j) {
+	return func2(cube[a][i] & (~31)) | func1(cube[a][i] & 31)  |  (func2(cube[a][j] & (~31)) | func1(cube[a][j] & 31)) << 4
+}
+
 void renderCube() {
     digitalWrite(SS, LOW);
     SPI.transfer(0x01 << 0);
-
-    byte num11 = func2(cube[0][2] & (~31)) | func1(cube[0][2] & 31)  |  (func2(cube[0][0] & (~31)) | func1(cube[0][0] & 31)) << 4;
+	byte num11 = func_produce(0, 2, 0);
     SPI.transfer(num11);
-    byte num12 = func2(cube[0][7] & (~31)) | func1(cube[0][7] & 31)  |  (func2(cube[0][5] & (~31)) | func1(cube[0][5] & 31)) << 4;
+    byte num12 = func_produce(0, 7, 5);
     SPI.transfer(num12);
     digitalWrite (SS, HIGH);
     delayMicroseconds(50);
 
     digitalWrite (SS, LOW);
     SPI.transfer(0x01 << 1);
-
-    byte num21 = func2(cube[2][2] & (~31)) | func1(cube[2][2] & 31)  |  (func2(cube[2][0] & (~31)) | func1(cube[2][0] & 31)) << 4;
+	byte num21 = func_produce(2, 2, 0);
     SPI.transfer(num21);
-    byte num22 = func2(cube[2][7] & (~31)) | func1(cube[2][7] & 31)  |  (func2(cube[2][5] & (~31)) | func1(cube[2][5] & 31)) << 4;
+    byte num22 = func_produce(2, 7, 5);
     SPI.transfer(num22);
     digitalWrite (SS, HIGH);
     delayMicroseconds(50);
 
     digitalWrite (SS, LOW);
     SPI.transfer(0x01 << 2);
-
-    byte num31 = func2(cube[5][2] & (~31)) | func1(cube[5][2] & 31)  |  (func2(cube[5][0] & (~31)) | func1(cube[5][0] & 31)) << 4;
+    byte num31 = func_produce(5, 2, 0);
     SPI.transfer(num31);
-    byte num32 = func2(cube[5][7] & (~31)) | func1(cube[5][7] & 31)  |  (func2(cube[5][5] & (~31)) | func1(cube[5][5] & 31)) << 4;
+    byte num32 = func_produce(5, 7, 5);
     SPI.transfer(num32);
     digitalWrite (SS, HIGH);
     delayMicroseconds(50);
 
     digitalWrite (SS, LOW);
     SPI.transfer(0x01 << 3);
-
-    byte num41 = func2(cube[7][2] & (~31)) | func1(cube[7][2] & 31)  |  (func2(cube[7][0] & (~31)) | func1(cube[7][0] & 31)) << 4;
+    byte num41 = func_produce(7, 2, 0);
     SPI.transfer(num41);
-    byte num42 = func2(cube[7][7] & (~31)) | func1(cube[7][7] & 31)  |  (func2(cube[7][5] & (~31)) | func1(cube[7][5] & 31)) << 4;
+    byte num42 = func_produce(7, 7, 5);
     SPI.transfer(num42);
     digitalWrite (SS, HIGH);
     delayMicroseconds(50);
